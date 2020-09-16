@@ -1,0 +1,21 @@
+Hello,
+
+We have an open IT request waiting for your attention. Please log in to your Remedy console and Approve it to continue with the process or Reject if you wish to cancel this request.
+
+CRQ#: aaaaaaaaaa
+
+User: bbbbbbbbbb
+
+Requested Item: cccccccccc
+
+In order to approve or reject please follow the steps attached or give us a call to the service desk if you need assistance. 
+
+*	Toll-free in the US: +1 (855) 848-3375  - +1 (855) 8-IT-Desk
+*	Toll-free in Mexico: 01 (800) 837-1730
+*	North and South America - International & Raleigh, NC: +1 (919) 361-4180 
+*	EMEA - Toll-free in the EU: 00 800 200 80808
+*	EMEA - Outside of the EU - 00 353 906 460888
+
+Please note this email is not monitored. 
+
+Regards
