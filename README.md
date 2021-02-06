@@ -9,3 +9,14 @@ From line 99 to 111 prepare objects that will no change and are necessary for se
 
 next part is explained on script it self and it format data and send emails to approvers and errors to service desk 
 
+List of files to run this script
+
+
+123.txt
+body.txt
+crqsnotfound.txt
+emailerlog.txt
+error.txt
+get_data.txt
+get-data.cmd
+requester.txt
