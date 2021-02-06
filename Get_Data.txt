@@ -1,0 +1,7 @@
+open ftp://<username>:<password>@<ftp-ip-or-hostname>/
+cd FromOnDemand 
+get P1.xlsx C:\CRQ_Reminder\
+get P2.xlsx C:\CRQ_Reminder\
+get P3.xlsx C:\CRQ_Reminder\
+close
+exit
