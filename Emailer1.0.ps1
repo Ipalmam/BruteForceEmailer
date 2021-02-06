@@ -114,9 +114,9 @@ for($i = 0; $i -lt $Requests1.Length; $i++){
         if($Requests1[$i] -contains $Requests2[$j]){
             for($k = 0; $k -lt $Requests3.Length; $k++){
                 if($Requests1[$i] -contains $Requests3[$k]){
-                    $Body = get-content "Body.txt"
-                    $Body = $Body -replace "aaaaaaaaaa",$Requests1[$i]
-                    $array = $Requesters[$i].split(" ")	
+                    $Body = get-content "Body.txt"                        ##here we start to personalize each body email
+                    $Body = $Body -replace "aaaaaaaaaa",$Requests1[$i]    ##add requester's name
+                    $array = $Requesters[$i].split(" ")					  ##starting to format requester name 
                     for($l = 0; $l -lt $array.length; $l++){
                             $array[$l] = $array[$l].substring(0,1).toupper()+$array[$l].substring(1).tolower()
                         }
@@ -143,14 +143,14 @@ for($i = 0; $i -lt $Requests1.Length; $i++){
 							$RequesterEmailAddress = $RequesterEmailAddress + $RequesterEmail[$l]
 						}
                     }
-                    try{$Cc = get-aduser -filter 'Name -like $RequesterEmailAddress' | Select-Object UserPrincipalName} Catch{$_ | Out-File 123.txt -Append}
+                    try{$Cc = get-aduser -filter 'Name -like $RequesterEmailAddress' | Select-Object UserPrincipalName} Catch{$_ | Out-File 123.txt -Append} ##searching aduser by email
 					$RequesterEmailAddress = "123"
-                    if($null -eq $Cc){
+                    if($null -eq $Cc){                                  ##add erroe message to log in case user was not found on AD
 						Clear-content -Path "123.txt"
 						$message = $Requesters[$i] + " User email address don't found"
 						Add-content  -Path "Error.txt" $message
 					}
-					else{
+					else{												##modifying requester names as i didn't use json but txt files and CC them in email
 						Add-content -Path "Requester.txt" $Cc
 						$Cc = Get-content -Path "Requester.txt"
 						Clear-Content -Path "Requester.txt" -Force
@@ -161,14 +161,14 @@ for($i = 0; $i -lt $Requests1.Length; $i++){
 						$UPNs = $UPNs.Substring(0,$UPNs.Length-1)
                     }
                     $Cc = $UPNs																																								##obtener correo de requester
-					$Subject = $Requests1[$i] + " is pending for your approval"
+					$Subject = $Requests1[$i] + " is pending for your approval"   ##personalizing subject for each email
 					$ApproversList = $Approvers[$k].split(';')
                     for($l = 0; $l -lt $ApproversList.Length; $l++){
-						try{$AppoverEmail = get-ADUser -identity $ApproversList[$l] | select-object UserPrincipalName} Catch{$_ | Out-File 123.txt -Append}
+						try{$AppoverEmail = get-ADUser -identity $ApproversList[$l] | select-object UserPrincipalName} Catch{$_ | Out-File 123.txt -Append}##valitaind email addresses on AD
 						if($null -eq $AppoverEmail)
 						{
 							Clear-content -Path "123.txt"
-							$message = $Requests1[$i] + $ApproversList[$j] +" Approver email is not correct, check active directory"
+							$message = $Requests1[$i] + $ApproversList[$j] +" Approver email is not correct, check active directory"   ##saing error message on error log file
 							Add-content  -Path "Error.txt" $message
 						}
 						else
@@ -182,7 +182,7 @@ for($i = 0; $i -lt $Requests1.Length; $i++){
 							$UPNs = $array[$value]
 							$UPNs = $UPNs.Substring(0,$UPNs.Length-1)
 							$AppoverEmail = $UPNs
-							if($to -contains "123")
+							if($to -contains "123")		##validating appprover email 
 							{
 								$To = $AppoverEmail
 							}
@@ -191,7 +191,7 @@ for($i = 0; $i -lt $Requests1.Length; $i++){
 								$To = $To + ";" + $AppoverEmail
 							}
 						}	
-					}
+					}			##from here we start to create a log from emails sent
 					Add-content -Path "EmailerLog.txt" -value "`n`n###############################################################`n`nSending email with next information...`n`n"
 					$arrayTo = $to.split(";")
 					$To = "123"
@@ -213,15 +213,16 @@ for($i = 0; $i -lt $Requests1.Length; $i++){
 						$EmailSent = "123"
 					}
 					$arrayTo = @()
-					$FoundCRQ = "true"
+					$FoundCRQ = "true"  										##creating a flag for request found   
+					$Requests3 = $Requests3 | Where-Object { $_ -ne $k }		##remove this item from array to improve performace
 					break
                 }
                 else {
 					$EmailSent = "456"
 					$FoundCRQ = "false"
 	            }
-			}
-			if ($EmailSent -eq "456") {
+			}				
+			if ($EmailSent -eq "456") {										##validating data on all files, if a request is not found on one saves an error on error log
 				$message = $Requests1[$i] + " CRQ not listed in P3 report"
 				Add-content  -Path "CRQsNotFound.txt" $message
 			}
@@ -229,18 +230,19 @@ for($i = 0; $i -lt $Requests1.Length; $i++){
         else {
 			$FoundCRQ = "false"
 		}
-		if ($FoundCRQ -eq "true") {
+		if ($FoundCRQ -eq "true") {											##validating flag status for request found to avoid search a request when a related email has been sent
+			$Requests2 = $Requests2 | Where-Object { $_ -ne $j }			##remove this item from array to improve performace
 			break
 		}
 	}
-	if ($FoundCRQ -eq "false") {
+	if ($FoundCRQ -eq "false") {											##validating data on all files, if a request is not found on one saves an error on error log
 		$message = $Requests1[$i] + " CRQ not listed in P2 report"
 		Add-content  -Path "CRQsNotFound.txt" $message
 	}else {
 		
 	}
 }
-$message = Get-content -Path "CRQsNotFound.txt"
+$message = Get-content -Path "CRQsNotFound.txt"					##generating error email for requests not found
 if($null -eq $message){
 	
 }else{
@@ -249,4 +251,4 @@ if($null -eq $message){
 }
 
 
-Remove-Item -Path * -Include *.xlsx
+Remove-Item -Path * -Include *.xlsx			##removing currend data as reports are updated and dowloaded every day
