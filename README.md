@@ -20,3 +20,7 @@ error.txt
 get_data.txt
 get-data.cmd
 requester.txt
+smtpserver.txt
+from.txt
+password.txt
+
